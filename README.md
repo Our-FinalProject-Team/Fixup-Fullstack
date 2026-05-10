@@ -73,14 +73,18 @@ Custom rule-based multilingual keyword engine:
 - Customers: session-based conversations
 - Professionals: persistent chat history
 
-# 🧱 Tech Stack
+## 🧱 Tech Stack
+
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+![Redux](https://img.shields.io/badge/Redux-593D88?style=for-the-badge&logo=redux&logoColor=white)
+![SignalR](https://img.shields.io/badge/SignalR-512BD4?style=for-the-badge&logo=microsoft&logoColor=white)
+![SQL Server](https://img.shields.io/badge/SQL_Server-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white)
+![Context API](https://img.shields.io/badge/Context_API-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Layered Architecture](https://img.shields.io/badge/Layered_Architecture-2E8B57?style=for-the-badge&logo=architecture&logoColor=white)
 -
-Redux,context API ,SignalR ,  Layered Architecture (Controllers / Services / Repository / Data Layer),SQL Server
-
 # 👥 Team Contribution
 This project was developed collaboratively under a GitHub Organization.
 
