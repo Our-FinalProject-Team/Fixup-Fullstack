@@ -93,7 +93,7 @@ This project was developed collaboratively under a GitHub Organization.
 ###  TehillaZ
 <img src="https://github.com/TehillaZ.png" width="50" style="border-radius:50%; float:left; margin-right:10px;" />
 
-* Real-time communication architecture using SignalR for instant bi-directional messaging
+* **Real-time communication architecture using SignalR** for instant bi-directional messaging
 * Robust message pipeline handling client-server synchronization, validation, and delivery flow
 * End-to-end image processing and AI integration pipeline for automated request analysis and categorization
 * Intelligent routing system for dynamic assignment of requests to relevant professionals based on classification logic
