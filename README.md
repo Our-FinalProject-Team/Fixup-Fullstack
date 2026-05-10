@@ -1,3 +1,3 @@
-<p align="center">
-  <img src="./assets/fixup-logo.png" width="200" alt="FixUp Logo">
+<p align="left">
+  <img src="./assests/fixup-logo.png" width="200" alt="FixUp Logo">
 </p>
