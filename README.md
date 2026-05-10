@@ -2,13 +2,13 @@
   <img src="./assests/fixup-logo.png" width="200" alt="FixUp Logo">
 </p>
 
-# FixUp - Real-Time Service Platform
+## FixUp - Real-Time Service Platform
 
 FixUp is a production-like real-time service marketplace platform that connects customers with professional service
 providers through smart issue classification, real-time communication, and automated routing.
 The system enables users to report problems, attach images, and receive instant assistance from the most relevant professionals.
 
-# 💡 Project Overview
+## 💡 Project Overview
 FixUp is a smart service orchestration system designed to reduce the time between problem reporting and resolution.
 Users can:
 - Report technical or home-related issues
