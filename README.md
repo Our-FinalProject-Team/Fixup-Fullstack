@@ -131,3 +131,63 @@ Implemented in React + Tailwind CSS
   <img src="./assests/fixup-dashboard.png" width="30%" /> 
 </p>
 
+# ⚙️ Environment Configuration
+
+Create a local `appsettings.json` file inside the backend project and configure the required secrets and local settings:
+
+```json
+{
+  "GeminiApiKey": "YOUR_API_KEY",
+
+  "ConnectionStrings": {
+    "DefaultConnection": "YOUR_CONNECTION_STRING"
+  },
+
+  "Jwt": {
+    "Key": "YOUR_JWT_SECRET",
+    "Issuer": "FixUpBackend",
+    "Audience": "FixUpFrontend",
+    "DurationInMinutes": 120
+  },
+
+  "EmailSettings": {
+    "Email": "YOUR_EMAIL",
+    "Password": "YOUR_EMAIL_PASSWORD",
+    "Host": "YOUR_SMTP_HOST",
+    "Port": 587
+  }
+}
+```
+
+# 🚀 Running The Project
+1️⃣ Clone the repository
+```bash
+git clone YOUR_REPOSITORY_URL
+```
+2️⃣ Frontend Setup
+```bash
+cd client
+npm install
+npm run dev
+```
+Frontend runs on:
+http://localhost:5173.
+
+3️⃣ Backend Setup
+```bash
+cd server
+dotnet restore
+dotnet run
+```
+Backend runs on:
+https://localhost:7230
+
+4️⃣ Database Setup
+Make sure SQL Server is running locally and update the connection string inside:
+```bash
+appsettings.json
+```
+Apply Entity Framework migrations:
+```bash
+Update-Database
+```
