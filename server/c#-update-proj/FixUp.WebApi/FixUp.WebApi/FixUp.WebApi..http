@@ -1,6 +1,0 @@
-@FixUp.WebApi__HostAddress = http://localhost:5208
-
-GET {{FixUp.WebApi__HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
