@@ -1,0 +1,6 @@
+appsettings.json
+*.env
+bin/
+obj/
+.vs/
+
