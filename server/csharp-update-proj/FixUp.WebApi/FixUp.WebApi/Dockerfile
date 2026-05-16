@@ -18,6 +18,6 @@ EXPOSE 8080
 
 COPY --from=build /app/publish .
 
-COPY ["server/csharp-update-proj/FixUp.WebApi/FixUp.WebApi/ProfessionalsSettings.json", "./"]
+COPY ["server/csharp-update-proj/FixUp.WebApi/FixUp.WebApi/professionalsSettings.json", "./"]
 
 ENTRYPOINT ["dotnet", "FixUp.WebApi.dll"]
