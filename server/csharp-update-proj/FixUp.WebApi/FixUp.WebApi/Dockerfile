@@ -1,3 +1,4 @@
+
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
@@ -18,6 +19,6 @@ EXPOSE 8080
 
 COPY --from=build /app/publish .
 
-COPY ["server/csharp-update-proj/FixUp.WebApi/FixUp.WebApi/professionalsSettings.json", "./"]
+COPY --from=build /src/server/csharp-update-proj/FixUp.WebApi/FixUp.WebApi/professionalsSettings.json ./ProfessionalsSettings.json
 
 ENTRYPOINT ["dotnet", "FixUp.WebApi.dll"]
