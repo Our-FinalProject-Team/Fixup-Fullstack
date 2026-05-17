@@ -15,7 +15,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. רישום שירותים (Services Configuration) ---
-
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
