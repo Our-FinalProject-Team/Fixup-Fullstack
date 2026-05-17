@@ -6,6 +6,7 @@ using FixUp.Service.Interfases;
 using FixUp.Service.Services;
 using FixUpSolution.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -80,8 +81,11 @@ builder.Services.AddCors(options =>
 
 // חיבור ל-Database
 builder.Services.AddDbContext<IContext, DataContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
-    sqlOptions => sqlOptions.EnableRetryOnFailure())
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure()
+    )
+    .ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning))
 );
 
 //חיבור ל-AI
