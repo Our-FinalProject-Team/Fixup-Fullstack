@@ -118,6 +118,12 @@ builder.Configuration.AddJsonFile("ProfessionalsSettings.json",
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<DataContext>(); 
+    dbContext.Database.EnsureCreated(); 
+}
+
 // --- 3. הגדרת ה-Pipeline (הסדר קריטי!) ---
 
 if (app.Environment.IsDevelopment())
