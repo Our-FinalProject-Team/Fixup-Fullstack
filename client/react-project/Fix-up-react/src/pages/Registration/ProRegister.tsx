@@ -145,8 +145,8 @@ export default function Registration() {
 
     
     setTimeout(() => {
-        window.location.href = "/logIn"; // הפניה לדף הבית
-      }, 5000);
+        window.location.href = "/LogIn"; // הפניה לדף הבית
+      }, 2000);
 
   
     } 
