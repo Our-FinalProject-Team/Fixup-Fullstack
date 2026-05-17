@@ -108,71 +108,86 @@ public class RequestService : IRequestService
 
         return _mapper.Map<IEnumerable<RequestDisplayDto>>(filtered);
     }
-    public async Task AddRequestFromDtoAsync(RequestCreateDto dto)
-    {
-        var requestEntity = _mapper.Map<Request>(dto);//מעתיק את הנתונים שבאו מהשרת (DTO) לשורה שתתאים לדטה (Entity)
-        requestEntity.CreatedAt = System.DateTime.Now;//תאריך יצירת הבקשה 
-        requestEntity.Status = "ממתין";//סטטוס ממתין (לאישור בעל המקצוע
-        requestEntity.ApprovalToken = Guid.NewGuid().ToString();//קוד יחודי לבקשה זו
-
-        await _requestRepository.AddAsync(requestEntity);//שליחת הנתונים ל SQL
-        string acceptUrl = $"http://localhost:5208/api/Requests/accept-request/{requestEntity.Id}/{requestEntity.ProfessionalId}";//קישור אישור לבעל מקצוע
-        string siteUrl = "http://localhost:5173/my-requests";//קישור לאתר ללקוח
-                                                             //שליחת מייל ללקוח
-                string body = $@"
-                    <div style='direction: rtl; font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; background-color: white;'>
-                        <div style='background: linear-gradient(135deg, #FFB900 0%, #28A745 100%); color: white; padding: 25px; text-align: center;'>
-                            <h1 style='margin: 0;'>FIXUP</h1>
-                        </div>
-                        <div style='padding: 25px; line-height: 1.6; color: #333;'>
-                            <h2 style='color: #28A745;'>שלום {dto.CustomerName},</h2>
-                            <p>קיבלנו את בקשתך בנושא: <strong style='color: #FFB900;'>{dto.Subject}</strong>.</p>
-                            <div style='background-color: #f1f9f2; padding: 15px; border-right: 5px solid #28A745; margin: 20px 0;'>
-                                {dto.Description}
-                            </div>
-                            <p>תוכל לעקוב אחר הבקשה בקישור הבא: <a href='{siteUrl}'>{siteUrl}</a></p>
-                            <p>ברגע שבעל מקצוע יאשר את הבקשה, נשלח לך עדכון נוסף.</p>
-                        </div>
-                    </div>";
-                await _emailService.SendEmailAsync(
-                dto.CustomerEmail,
-                "בקשתך התקבלה ב-FixUp",
-                body);
-                //שליחת מייל לבעל המקצוע שיאשר את הבקשה
-                var prof = await _professionalRepository.GetProfessionalByIdAsync(dto.ProfessionalId);
-                string displayName = prof?.FullName ?? "בעל מקצוע יקר";//prof.FullName
-                                                                       //if (prof != null)
-                                                                       //{
-                string body_prof = $@"
-                    <div style='direction: rtl; font-family: Segoe UI, Arial; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 15px; padding: 20px; background-color: #f9f9f9;'>
-                        <h2 style='color: #28A745; text-align: center;'>הזמנת עבודה חדשה מחכה לך!</h2>
     
-                        <div style='background-color: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
-                            <p><strong>🛠️ מהות העבודה:</strong> {dto.Subject}</p>
-                            <p><strong>👤 שם הלקוח:</strong> {dto.CustomerName}</p>
-                            <p><strong>📍 מיקום/פרטים נוספים:</strong> {dto.Description}</p>
-                        </div>
+public async Task AddRequestFromDtoAsync(RequestCreateDto dto)
+{
+    // מעתיק את הנתונים שבאו מהשרת (DTO) לשורה שתתאים לדטה (Entity)
+    var requestEntity = _mapper.Map<Request>(dto);
+    
+    // שימוש ב-UtcNow כדי למנוע את קריסת ה-PostgreSQL/Supabase בגלל אזורי זמן
+    requestEntity.CreatedAt = System.DateTime.UtcNow; 
+    
+    // סטטוס ממתין (לאישור בעל המקצוע)
+    requestEntity.Status = "ממתין";
+    
+    // קוד יחודי לבקשה זו
+    requestEntity.ApprovalToken = Guid.NewGuid().ToString();
 
-                        <div style='text-align: center; margin-top: 25px;'>
-                            <a href='{acceptUrl}' style='background-color: #28A745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 18px; display: inline-block;'>
-                                לצפייה בפרטים המלאים ואישור העבודה 
-                            </a>
-                        </div>
-                    </div>";
+    // שליחת הנתונים ל-SQL (נשמר בהצלחה בדאטהבייס)
+    await _requestRepository.AddAsync(requestEntity);
 
-        var profEmail = await _professionalRepository.GetProfessionalByIdAsync(dto.ProfessionalId);
-        await _emailService.SendEmailAsync(profEmail.Email, "הצעת עבודה חדשה!", body_prof);
-        //await _emailService.SendEmailAsync(prof.Email, "הצעת עבודה חדשה!", body_prof);
-        // }           
+    // קישורים דינמיים
+    string acceptUrl = $"http://localhost:5208/api/Requests/accept-request/{requestEntity.Id}/{requestEntity.ProfessionalId}";
+    string siteUrl = "http://localhost:5173/my-requests";
 
+    // שליחת המיילים עטופה ב-try-catch כדי שבעיות תקשורת/SMTP לא יקריסו את כל ה-API
+    try
+    {
+        // 1. שליחת מייל ללקוח
+        string body = $@"
+            <div style='direction: rtl; font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; background-color: white;'>
+                <div style='background: linear-gradient(135deg, #FFB900 0%, #28A745 100%); color: white; padding: 25px; text-align: center;'>
+                    <h1 style='margin: 0;'>FIXUP</h1>
+                </div>
+                <div style='padding: 25px; line-height: 1.6; color: #333;'>
+                    <h2 style='color: #28A745;'>שלום {dto.CustomerName},</h2>
+                    <p>קיבלנו את בקשתך בנושא: <strong style='color: #FFB900;'>{dto.Subject}</strong>.</p>
+                    <div style='background-color: #f1f9f2; padding: 15px; border-right: 5px solid #28A745; margin: 20px 0;'>
+                        {dto.Description}
+                    </div>
+                    <p>תוכל לעקוב אחר הבקשה בקישור הבא: <a href='{siteUrl}'>{siteUrl}</a></p>
+                    <p>ברגע שבעל מקצוע יאשר את הבקשה, נשלח לך עדכון נוסף.</p>
+                </div>
+            </div>";
+
+        await _emailService.SendEmailAsync(dto.CustomerEmail, "בקשתך התקבלה ב-FixUp", body);
+
+        // 2. שליחת מייל לבעל המקצוע שיאשר את הבקשה
+        var prof = await _professionalRepository.GetProfessionalByIdAsync(dto.ProfessionalId);
+        
+        if (prof != null && !string.IsNullOrEmpty(prof.Email))
+        {
+            string displayName = prof.FullName ?? "בעל מקצוע יקר";
+            
+            string body_prof = $@"
+                <div style='direction: rtl; font-family: Segoe UI, Arial; max-width: 600px; margin: auto; border: 1px solid #ddd; border-radius: 15px; padding: 20px; background-color: #f9f9f9;'>
+                    <h2 style='color: #28A745; text-align: center;'>הזמנת עבודה חדשה מחכה לך!</h2>
+                    
+                    <div style='background-color: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+                        <p><strong>🛠️ מהות העבודה:</strong> {dto.Subject}</p>
+                        <p><strong>👤 שם הלקוח:</strong> {dto.CustomerName}</p>
+                        <p><strong>📍 מיקום/פרטים נוספים:</strong> {dto.Description}</p>
+                    </div>
+
+                    <div style='text-align: center; margin-top: 25px;'>
+                        <a href='{acceptUrl}' style='background-color: #28A745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 18px; display: inline-block;'>
+                            לצפייה בפרטים המלאים ואישור העבודה 
+                        </a>
+                    </div>
+                </div>";
+
+            await _emailService.SendEmailAsync(prof.Email, "הצעת עבודה חדשה!", body_prof);
+        }
     }
+    catch (System.Exception ex)
+    {
+        // במקרה של Timeout או בעיית סיסמה בגוגל, השגיאה תודפס רק ללוגים של Render
+        // השרת לא ייפול, ה-CORS לא יישבר, והלקוח יקבל תשובה שהכל עבר בהצלחה!
+        System.Console.WriteLine($"[Email Error Caught] Failed to send emails due to network/SMTP issue: {ex.Message}");
+    }
+}
 
-    //public async Task<IEnumerable<RequestDisplayDto>> GetMyJobsAsync(int profId)
-    //{
-    //    var all = await _requestRepository.GetAllAsync();
-    //    var myJobs = all.Where(r => r.ProfessionalId == profId);
-    //    return _mapper.Map<IEnumerable<RequestDisplayDto>>(myJobs);
-    //}
+ 
 
     public async Task<IEnumerable<RequestDisplayDto>> GetMyJobsAsync(int profId)
     {
