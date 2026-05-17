@@ -70,7 +70,9 @@ export default function TechnicianDashboard() {
   
   // Get user from Redux
   const user = useSelector((state: RootState) => state.user.currentUser);
-  const isLoading = !user && isLoggedIn;
+  const hasActiveUser = !!user; 
+
+   const isLoading = isLoggedIn && !user;
   
   // Find current theme
   const currentTheme = THEMES.find(t => t.id === themeId) || THEMES[0];
@@ -140,46 +142,57 @@ useEffect(() => {
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
           
           {/* Logo & User Info */}
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="font-bold text-sm leading-tight">לוח בקרה טכנאי</p>
-              {/* User Name Display with Loading State */}
-              {isLoading ? (
-                <div className={`animate-pulse h-3 w-24 rounded ${currentTheme.card}`} />
-              ) : (
-                <p className={`text-[10px] ${currentTheme.subtext}`}>
-                  {user?.fullName || 'אורח'}
-                </p>
-              )}
-            </div>
-          </div>
+         <div className="flex items-center gap-3">
+  {/* האייקון הכתום עם הברק */}
+  <div className="w-9 h-9 rounded-xl bg-orange-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+    <Zap className="w-5 h-5 text-white" />
+  </div>
+  
+  {/* אזור הטקסטים */}
+  <div className="flex flex-col text-right">
+    <p className="font-bold text-sm leading-tight text-white">
+      לוח בקרה
+    </p>
+    
+    {isLoading ? (
+      /* ה-Skeleton מופיע רק בזמן טעינה */
+      <div className={`animate-pulse h-3 w-24 rounded ${currentTheme.card} mt-1`} />
+    ) : (
+      /* המידע האמיתי מוצג רק כשהטעינה הסתיימה */
+      <p className="text-xs text-slate-300 font-medium mt-0.5">
+        {/* מציג את השם של המשתמש או 'אורח' אם אין משתמש */}
+        {user?.fullName || 'אורח'}
+        
+        {/* התנאי המגן: המקצוע (specialty) יוצג רק אם המשתמש הוא Professional */}
+        {user && user.role === 'Professional' && user.specialty && (
+          <span className="text-slate-500 font-normal"> | {user.specialty}</span>
+        )}
+      </p>
+      )}
+    </div> {/* סגירת ה-flex flex-col במקום הנכון */}
+  </div>
 
-          <div className="flex items-center gap-2">
-            {/* Status Button - Connected/Disconnected with Auth Integration */}
-            <button
-              onClick={() => {
-                if (isLoggedIn) {
-                  // Logout when connected
-                  logout();
-                  navigate('/LogIn');
-                } else {
-                  // Navigate to login when not connected
-                  navigate('/LogIn');
-                }
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
-                isLoggedIn 
-                  ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' 
-                  : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
-              }`}
-              title={isLoggedIn ? 'מחובר - לחץ להתנתקות' : 'לא מחובר - לחץ להתחברות'}
-            >
-              <span className={`w-1.5 h-1.5 rounded-full ${isLoggedIn ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
-              {isLoggedIn ? 'מחובר' : 'לא מחובר'}
-            </button>
+          <div className="flex items-center gap-2">           
+          {/* Status Button - Connected/Disconnected */}
+          <button
+            onClick={() => {
+              if (isLoggedIn) {
+                logout();
+                navigate('/LogIn');
+              } else {
+                navigate('/LogIn');
+              }
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${
+              hasActiveUser 
+                ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' 
+                : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+            }`}
+            title={hasActiveUser ? 'מחובר - לחץ להתנתקות' : 'לא מחובר - לחץ להתחברות'}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${hasActiveUser ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`} />
+            {hasActiveUser ? 'מחובר' : 'לא מחובר'}
+          </button>
 
             {/* Dark/Light Toggle */}
             <button
