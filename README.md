@@ -4,7 +4,9 @@
 
 ## FixUp - Real-Time Service Platform
 [![Live Website](https://img.shields.io/badge/Demo-Live_Website-28A745?style=for-the-badge&logo=vercel&logoColor=white)](https://fixup-fullstack1.vercel.app)
+-
 [![API Endpoint](https://img.shields.io/badge/API-Render_Backend-000000?style=for-the-badge&logo=render&logoColor=white)](https://fixup-fullstack.onrender.com)
+-
 FixUp is a production-like real-time service marketplace platform that connects customers with professional service
 providers through smart issue classification, real-time communication, and automated routing.
 The system enables users to report problems, attach images, and receive instant assistance from the most relevant professionals.
