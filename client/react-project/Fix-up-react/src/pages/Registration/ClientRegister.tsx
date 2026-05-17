@@ -102,8 +102,8 @@ if (!validateEmail(form.email)) {
          });
 
           setTimeout(() => {
-      window.location.href = "/login"; 
-      }, 8000);
+      window.location.href = "/LogIn"; 
+      }, 2000);
 
     } catch (err: any) {
       console.error("Registration Error:", err.response?.data);
